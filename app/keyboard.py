@@ -6,7 +6,8 @@ start_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Подъем'),
                                       [KeyboardButton(text='Настроение')],
                                       [KeyboardButton(text='Статистика')]],
                                resize_keyboard=True,
-                               input_field_placeholder='Выбери пункт меню')
+                               input_field_placeholder='Выбери пункт меню',
+                               one_time_keyboard=True)
 
 #кнопки для ввода данных
 #wake_up = InlineKeyboardMarkup(inline_keyboard=[
