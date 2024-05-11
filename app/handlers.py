@@ -65,10 +65,13 @@ async def how_you_state(msg: Message, state: FSMContext):
     await msg.answer('Отлично!\n Я запомнил, что сейчас ты чувствуешь!\nНе забывай обо мне!', reply_markup=kb.start_kb)
     await rq.set_how(how=msg.text, tg_id=msg.from_user.id)
 
-#@r.message(F.text == "Статистика")
-#async def how_you(msg: Message):
-#    await msg.answer('Твоя статистика: ', reply_markup=kb.start_kb)
-#    await rq.stat_all(tg_id=msg.from_user.id)
+@r.message(F.text == "Статистика")
+async def how_you(msg: Message):
+    result = await rq.stat_all(tg_id=msg.from_user.id)
+    for row in result:
+       await msg.answer(f'Твоя статистика сна:\n\nВремя подъема: {row.up},\nВремя отбоя: {row.down},\nНастроение: {row.how}')
+#        await msg.answer(f'Твоя статистика сна:\n\nКоличество сна: {row.amount}')
+
 
 
 

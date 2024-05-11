@@ -22,4 +22,5 @@ class Answer(Base):
      down: Mapped[int] = mapped_column(String(25))
      how: Mapped[int] = mapped_column(String(120))
      tg_id: Mapped[BigInteger] = mapped_column(BigInteger)
+#     amount: Mapped[int] = mapped_column(nullable=True)
      #tg_id: Mapped[int] = mapped_column(ForeignKey('users.id'))

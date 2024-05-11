@@ -19,7 +19,7 @@ async def set_user(tg_id):
         user = await session.scalar(select(Answer).where(Answer.tg_id == tg_id))
 
         if not user:
-            session.add(Answer(up='up', down='down', how='how',tg_id=tg_id))
+            session.add(Answer(up='Заполни меня', down='Заполни меня', how='Заполни меня', tg_id=tg_id))
             await session.commit()
 
 async def set_up(up, tg_id):
@@ -40,11 +40,18 @@ async def set_how(how, tg_id):
         await session.execute(query)
         await session.commit()
 
+#async def amount():
+#    async with session_maker() as session:
+#        query = select(Answer.amount).where(Answer.tg_id == tg_id)
+#        for row in session.query(Answer).all():
+#            up = row.up
+#            down = row.down
+
 async def stat_all(tg_id):
     async with session_maker() as session:
         query = select(Answer).where(Answer.tg_id == tg_id)
         result = await session.execute(query)
-        return result.scalar()
+        return result.scalars().all()
 
 async def drop_db():
     async with engine.begin() as conn:
