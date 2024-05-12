@@ -1,3 +1,4 @@
+import re
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
@@ -6,6 +7,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.markdown import hbold
 from app import keyboard as kb
 import db.engine as rq
+
+
 
 r = Router()
 
@@ -32,26 +35,34 @@ async def wake_up(message: Message, state: FSMContext):
     await state.set_state(Write.wake_up)
     await message.answer('Напиши время своего пробуждения, а я запомню!')
 
-@r.message(Write.wake_up)
+@r.message(F.text.regexp(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$'), Write.wake_up)
 async def wake_up_st(message: Message, state: FSMContext):
     await state.update_data(up=message.text)
     up = await state.get_data()
-    await state.clear()
-    await message.reply(f'Отлично! \nЯ запомнил твой подъем в {up["up"]} :)\nНе забудь обо мне, как проснешься :)', reply_markup=kb.start_kb)
+    await message.reply(f'Отлично! \nЯ запомнил твой подъем в {up["up"]} :)\nНе забудь обо мне вечером!:)', reply_markup=kb.start_kb)
     await rq.set_up(up=message.text, tg_id=message.from_user.id)
+    await state.clear()
+
+@r.message(Write.wake_up)
+async def wake_up_els(message: Message, state: FSMContext):
+    await message.reply('Введи время в корректном формате ЧЧ:ММ еще раз:')
 
 @r.message(F.text=='Отбой')
 async def wake_dw(message: Message, state: FSMContext):
     await state.set_state(Write.wake_down)
-    await message.answer('Напиши время, когда сегодня заснула, а я запомню')
+    await message.answer('Напиши время, время отхода ко сну, а я запомню')
 
-@r.message(Write.wake_down)
+@r.message(F.text.regexp(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$'), Write.wake_down)
 async def wake_down_st(message: Message, state: FSMContext):
     await state.update_data(wake_down=message.text)
     wake_down = await state.get_data()
     await state.clear()
     await message.answer(f'Отлично!\nЯ запомнил время твоего отбоя в {wake_down["wake_down"]}\nНе забывай обо мне утром!', reply_markup=kb.start_kb)
     await rq.set_down(down=message.text, tg_id=message.from_user.id)
+
+@r.message(Write.wake_down)
+async def wake_up_els(message: Message, state: FSMContext):
+    await message.reply('Введи время в корректном формате ЧЧ:ММ еще раз:')
 @r.message(F.text=='Настроение')
 async def how_you(msg: Message, state: FSMContext):
     await state.set_state(Write.how_you)
@@ -67,17 +78,17 @@ async def how_you_state(msg: Message, state: FSMContext):
 
 @r.message(F.text == "Статистика")
 async def how_you(msg: Message):
-    result = await rq.stat_all(tg_id=msg.from_user.id)
-    for row in result:
-       await msg.answer(f'Твоя статистика сна:\n\nВремя подъема: {row.up},\nВремя отбоя: {row.down},\nНастроение: {row.how}')
-#        await msg.answer(f'Твоя статистика сна:\n\nКоличество сна: {row.amount}')
+    await rq.calculate_sleep_amount(tg_id=msg.from_user.id)
+    answers = await rq.fetch_all(tg_id=msg.from_user.id)
+    response_message = ""  # Инициализация пустой строки для сбора ответов
 
-
-
-
-#@r.callback_query(F.data=='Write') #обязательно добавить машину состояний
-#async def cal_wake(call: CallbackQuery):
- #   await call.mmessage.answer("Напиши время подъема:")
+    for answer in answers:
+        # Убедитесь, что у объектов 'answer' есть атрибут 'created'
+        formatted_date = answer.created.strftime("%d %B %Y года")
+        # Добавление информации о каждом ответе в общую строку
+        response_message += f"Дата: {formatted_date}, Настроение: {answer.how}, Количество сна: {answer.amount}\n"
+    # Отправка собранного сообщения
+    await msg.answer(response_message, reply_markup=kb.start_kb)
 
 @r.message()
 async def echo_handler(message: Message) -> None:
