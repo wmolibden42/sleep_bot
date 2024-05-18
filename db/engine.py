@@ -162,7 +162,6 @@ def calculate_duration(up_time, down_time):
         # Если up_time больше down_time, это означает, что пользователь лёг спать после полуночи и проснулся в следующий день
         return timedelta(days=1) - (up_time_delta - down_time_delta)
 
-
 async def click_set_up(up, tg_id):
     async with session_maker() as session:
         # Преобразуем время нажатия в формат, подходящий для базы данных

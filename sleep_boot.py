@@ -68,8 +68,9 @@ async def main() -> None:
     bot = Bot(token, parse_mode=ParseMode.HTML)
     # And the run events dispatching
     dp.include_router(r)
-    await dp.start_polling(bot)
     dp.loop.create_task(scheduler())
+    await dp.start_polling(bot)
+
 
 
 if __name__ == "__main__":

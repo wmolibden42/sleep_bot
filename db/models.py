@@ -6,12 +6,6 @@ class Base(DeclarativeBase):
      created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
      #updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
 
-#class User(Base):
- #    __tablename__ = 'users'
-
-  #   id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-   #  tg_id: Mapped[BigInteger] = mapped_column(BigInteger)
-     #name: Mapped[str] = mapped_column(String(20), nullable=False)
 
 class Answer(Base):
      __tablename__ = 'answers'
@@ -23,4 +17,3 @@ class Answer(Base):
      how_night: Mapped[int] = mapped_column(String(120), nullable=True)
      tg_id: Mapped[BigInteger] = mapped_column(BigInteger)
      amount: Mapped[int] = mapped_column(nullable=True)
-     #tg_id: Mapped[int] = mapped_column(ForeignKey('users.id'))

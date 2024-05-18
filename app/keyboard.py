@@ -2,7 +2,6 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardButton, InlineKeyboardMarkup)
 #кнопки, которые будут записывать время подъема/отбоя/настроение и вывод статистики
 start_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Начать')],
-#                                      KeyboardButton(text='Ввести в ручную')],
                                       [KeyboardButton(text='Статистика')]],
                                resize_keyboard=True,
                                input_field_placeholder='Выбери пункт меню',
